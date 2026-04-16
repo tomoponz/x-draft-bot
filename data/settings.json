@@ -1,0 +1,17 @@
+{
+  "siteTitle": "X Draft Bot - 手動投稿用ダッシュボード",
+  "siteDescription": "X APIを使わず、投稿候補を自動生成して手動投稿するためのページです。",
+  "timezone": "Asia/Tokyo",
+  "timezoneLabel": "JST",
+  "characterLimit": 140,
+  "draftsPerRun": 3,
+  "avoidRecentSourceCount": 5,
+  "recentHistoryLimit": 20,
+  "maxBodyLengthBeforeTrim": 120,
+  "output": {
+    "latestDraftsPath": "data/latest_drafts.json",
+    "historyPath": "data/history.json",
+    "postsCsvPath": "data/posts.csv",
+    "templatesPath": "data/templates.json"
+  }
+}

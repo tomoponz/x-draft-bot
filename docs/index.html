@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>X Draft Bot - 手動投稿用ダッシュボード</title>
+  <style>
+    :root { color-scheme: light dark; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans JP", sans-serif;
+      margin: 0;
+      padding: 16px;
+      line-height: 1.5;
+      background: #0b1020;
+      color: #e8eefc;
+    }
+    .container { max-width: 900px; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: 1.4rem; }
+    p.description { margin-top: 0; color: #b8c5e6; }
+    .section-title { margin-top: 24px; font-size: 1.1rem; }
+    .card {
+      border: 1px solid #334;
+      border-radius: 10px;
+      padding: 12px;
+      margin-bottom: 12px;
+      background: #121a33;
+    }
+    .meta { font-size: 0.85rem; color: #9db0de; }
+    .topic { margin: 8px 0; }
+    textarea {
+      width: 100%;
+      min-height: 120px;
+      border: 1px solid #445;
+      border-radius: 8px;
+      padding: 10px;
+      box-sizing: border-box;
+      font-size: 0.95rem;
+      background: #0d152b;
+      color: #e8eefc;
+    }
+    .hint { margin: 6px 0 0; font-size: 0.8rem; color: #9db0de; }
+    ul { padding-left: 18px; }
+    .footer { margin-top: 28px; color: #9db0de; font-size: 0.8rem; }
+    @media (max-width: 600px) {
+      body { padding: 12px; }
+      textarea { min-height: 140px; }
+    }
+  </style>
+</head>
+<body>
+  <main class="container">
+    <h1>X Draft Bot - 手動投稿用ダッシュボード</h1>
+    <p class="description">X APIを使わず、投稿候補を自動生成して手動投稿するためのページです。</p>
+    <p class="description">最終更新: 2026/04/16 20:34:32 (JST)</p>
+
+    <h2 class="section-title">最新の投稿候補</h2>
+    
+    <article class="card">
+      <header class="card-header">
+        <div class="meta">候補1 / 運用 / draft-20260416-001</div>
+        <div class="meta">生成日時: 2026/04/16 20:34:32 (JST)</div>
+      </header>
+      <p class="topic">元ネタ: 朝活習慣 (p001)</p>
+      <textarea readonly onclick="this.select()">今日の気づき: 朝の30分を固定すると、1日の判断ミスが減りやすい。最初は5分でもOK。 結論から言うと、継続しやすい形に変えるのがコツです。 #朝活 #習慣化 #自己管理 #SNS運用</textarea>
+      <p class="hint">上の本文をタップ（クリック）して全選択→コピーしてください。</p>
+    </article>
+  
+
+    <article class="card">
+      <header class="card-header">
+        <div class="meta">候補2 / 技術 / draft-20260416-002</div>
+        <div class="meta">生成日時: 2026/04/16 20:34:32 (JST)</div>
+      </header>
+      <p class="topic">元ネタ: テンプレート運用 (p007)</p>
+      <textarea readonly onclick="this.select()">運用メモ: テンプレートは固定しすぎず、導入と締めを回すだけでも重複感を抑えられる。 特に大事なのは、無理なく回る仕組みにすると強いです。 #コンテンツ設計 #テンプレ #Nodejs #GitHubActions</textarea>
+      <p class="hint">上の本文をタップ（クリック）して全選択→コピーしてください。</p>
+    </article>
+  
+
+    <article class="card">
+      <header class="card-header">
+        <div class="meta">候補3 / 技術 / draft-20260416-003</div>
+        <div class="meta">生成日時: 2026/04/16 20:34:32 (JST)</div>
+      </header>
+      <p class="topic">元ネタ: GitHub Actions (p003)</p>
+      <textarea readonly onclick="this.select()">実践して分かったこと: 定期実行はcronのUTCを意識する。JST換算をコメントに残すと運用ミスが減る。 まず押さえたいのは、まずは小さく試してみてください。 #GitHubActions #自動化 #Nodejs #X運用</textarea>
+      <p class="hint">上の本文をタップ（クリック）して全選択→コピーしてください。</p>
+    </article>
+  
+
+    <h2 class="section-title">直近履歴</h2>
+    <ul>
+      
+    <li>
+      <strong>draft-20260416-003</strong>
+      <span> / 技術 / posted: false</span><br />
+      <small>2026/04/16 20:34:32 (JST)</small>
+    </li>
+  
+
+    <li>
+      <strong>draft-20260416-002</strong>
+      <span> / 技術 / posted: false</span><br />
+      <small>2026/04/16 20:34:32 (JST)</small>
+    </li>
+  
+
+    <li>
+      <strong>draft-20260416-001</strong>
+      <span> / 運用 / posted: true</span><br />
+      <small>2026/04/16 20:34:32 (JST)</small>
+    </li>
+  
+
+    <li>
+      <strong>draft-20260415-001</strong>
+      <span> / 運用 / posted: false</span><br />
+      <small>2026/04/15 12:00:00 (JST)</small>
+    </li>
+  
+
+    <li>
+      <strong>draft-20260414-001</strong>
+      <span> / 運用 / posted: true</span><br />
+      <small>2026/04/14 09:30:00 (JST)</small>
+    </li>
+  
+    </ul>
+
+    <p class="footer">このページは下書き確認用です。Xへの投稿は手動で行ってください。</p>
+  </main>
+</body>
+</html>

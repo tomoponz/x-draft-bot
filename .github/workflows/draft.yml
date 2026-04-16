@@ -1,0 +1,46 @@
+name: Generate Drafts (Scheduled)
+
+on:
+  schedule:
+    # UTC基準: 00:00 / 06:00 / 12:00
+    # JST目安 : 09:00 / 15:00 / 21:00
+    - cron: "0 0,6,12 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build drafts
+        run: npm run build:post
+
+      - name: Build pages
+        run: npm run build:pages
+
+      - name: Commit & Push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/history.json data/latest_drafts.json docs/index.html
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "chore: update drafts and pages"
+            git push
+          fi
