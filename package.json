@@ -1,0 +1,16 @@
+{
+  "name": "x-draft-bot",
+  "version": "1.0.0",
+  "private": true,
+  "description": "X投稿候補をテンプレート方式で生成し、GitHub Pagesで公開する無料運用向けボット",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build:post": "node scripts/build_post.mjs",
+    "build:pages": "node scripts/build_pages.mjs",
+    "build": "npm run build:post && npm run build:pages",
+    "mark:posted": "node scripts/mark_posted.mjs"
+  }
+}

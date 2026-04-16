@@ -1,0 +1,34 @@
+{
+  "generatedAt": "2026-04-16T11:34:32.762Z",
+  "timezone": "Asia/Tokyo",
+  "timezoneLabel": "JST",
+  "drafts": [
+    {
+      "id": "draft-20260416-001",
+      "sourceId": "p001",
+      "category": "運用",
+      "topic": "朝活習慣",
+      "text": "今日の気づき: 朝の30分を固定すると、1日の判断ミスが減りやすい。最初は5分でもOK。 結論から言うと、継続しやすい形に変えるのがコツです。 #朝活 #習慣化 #自己管理 #SNS運用",
+      "createdAt": "2026-04-16T11:34:32.762Z",
+      "posted": false
+    },
+    {
+      "id": "draft-20260416-002",
+      "sourceId": "p007",
+      "category": "技術",
+      "topic": "テンプレート運用",
+      "text": "運用メモ: テンプレートは固定しすぎず、導入と締めを回すだけでも重複感を抑えられる。 特に大事なのは、無理なく回る仕組みにすると強いです。 #コンテンツ設計 #テンプレ #Nodejs #GitHubActions",
+      "createdAt": "2026-04-16T11:34:32.762Z",
+      "posted": false
+    },
+    {
+      "id": "draft-20260416-003",
+      "sourceId": "p003",
+      "category": "技術",
+      "topic": "GitHub Actions",
+      "text": "実践して分かったこと: 定期実行はcronのUTCを意識する。JST換算をコメントに残すと運用ミスが減る。 まず押さえたいのは、まずは小さく試してみてください。 #GitHubActions #自動化 #Nodejs #X運用",
+      "createdAt": "2026-04-16T11:34:32.762Z",
+      "posted": false
+    }
+  ]
+}
