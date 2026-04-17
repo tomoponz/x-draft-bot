@@ -1,13 +1,20 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, "..");
+const dataDir = process.env.X_DRAFT_BOT_DATA_DIR
+  ? path.resolve(process.env.X_DRAFT_BOT_DATA_DIR)
+  : path.resolve(rootDir, "data");
 
 function resolveFromRoot(relativePath) {
   return path.resolve(rootDir, relativePath);
+}
+
+function resolveFromData(filename) {
+  return path.resolve(dataDir, filename);
 }
 
 function escapeHtml(value) {
@@ -93,14 +100,24 @@ function renderHistoryItem(item, timezone, timezoneLabel) {
 }
 
 async function main() {
-  const settings = safeJsonObject(await readFile(resolveFromRoot("data/settings.json"), "utf8"));
-  const history = safeJsonArray(
-    await readFile(resolveFromRoot(settings.output?.historyPath || "data/history.json"), "utf8").catch(() => "[]")
-  );
+  const settingsPath = process.env.X_DRAFT_BOT_SETTINGS_PATH
+    ? path.resolve(process.env.X_DRAFT_BOT_SETTINGS_PATH)
+    : resolveFromData("settings.json");
 
-  const latestDrafts = safeJsonObject(
-    await readFile(resolveFromRoot(settings.output?.latestDraftsPath || "data/latest_drafts.json"), "utf8").catch(() => "{}")
-  );
+  const settings = safeJsonObject(await readFile(settingsPath, "utf8"));
+  const forceDataDir = Boolean(process.env.X_DRAFT_BOT_DATA_DIR);
+  const historyPath = !forceDataDir && settings.output?.historyPath
+    ? resolveFromRoot(settings.output.historyPath)
+    : resolveFromData("history.json");
+  const latestPath = !forceDataDir && settings.output?.latestDraftsPath
+    ? resolveFromRoot(settings.output.latestDraftsPath)
+    : resolveFromData("latest_drafts.json");
+  const docsPath = process.env.X_DRAFT_BOT_DOCS_PATH
+    ? path.resolve(process.env.X_DRAFT_BOT_DOCS_PATH)
+    : resolveFromRoot("docs/index.html");
+
+  const history = safeJsonArray(await readFile(historyPath, "utf8").catch(() => "[]"));
+  const latestDrafts = safeJsonObject(await readFile(latestPath, "utf8").catch(() => "{}"));
 
   const timezone = settings.timezone || "Asia/Tokyo";
   const timezoneLabel = settings.timezoneLabel || "JST";
@@ -250,8 +267,9 @@ async function main() {
 </html>
 `;
 
-  await writeFile(resolveFromRoot("docs/index.html"), html, "utf8");
-  console.log("docs/index.html updated.");
+  await mkdir(path.dirname(docsPath), { recursive: true });
+  await writeFile(docsPath, html, "utf8");
+  console.log(`${path.relative(rootDir, docsPath) || docsPath} updated.`);
 }
 
 main().catch((error) => {

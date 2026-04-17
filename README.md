@@ -60,6 +60,16 @@ npm run validate
 
 ## 5. 日常運用コマンド
 
+### 追加オプション（競合回避・テスト用）
+
+以下の環境変数を使うと、生成先を切り替えできます。
+
+- `X_DRAFT_BOT_DATA_DIR`: `data/` の代わりに使うディレクトリ
+- `X_DRAFT_BOT_DOCS_PATH`: `docs/index.html` の代わりに使う出力先
+
+`npm test` はこの仕組みを使って一時ディレクトリで実行されるため、通常の `data/history.json` を汚しません。
+
+
 ### 候補生成 + ページ生成
 
 ```bash
@@ -135,6 +145,12 @@ npm test
 ### Q. 候補が重複しやすい
 
 `templates.json` の `openers / bridges / closers / callsToAction` を増やしてください。
+
+
+### Q. `history.json` の競合が増える
+
+- workflow は `concurrency` で同時実行を抑制しています。
+- push前に `git pull --rebase` を入れているため、定期実行と手動実行が近いタイミングでも衝突しにくくしています。
 
 ### Q. Actions は成功したのに Pages が古い
 

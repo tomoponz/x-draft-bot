@@ -1,13 +1,20 @@
-import { readFile, writeFile } from "node:fs/promises";
+import { readFile, writeFile, mkdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, "..");
+const dataDir = process.env.X_DRAFT_BOT_DATA_DIR
+  ? path.resolve(process.env.X_DRAFT_BOT_DATA_DIR)
+  : path.resolve(rootDir, "data");
 
 function resolveFromRoot(relativePath) {
   return path.resolve(rootDir, relativePath);
+}
+
+function resolveFromData(filename) {
+  return path.resolve(dataDir, filename);
 }
 
 function parseCsvLine(line) {
@@ -68,14 +75,8 @@ function parseCsv(text) {
       record[header] = (row[index] ?? "").trim();
     });
 
-    if (!record.id || !record.body) {
-      // 空行・異常行はスキップ
-      continue;
-    }
-    if (idSet.has(record.id)) {
-      // 重複IDは後勝ちにせずスキップ（予期せぬ上書きを防ぐ）
-      continue;
-    }
+    if (!record.id || !record.body) continue;
+    if (idSet.has(record.id)) continue;
 
     idSet.add(record.id);
     records.push(record);
@@ -88,7 +89,10 @@ function formatDateForId(date) {
   const year = date.getUTCFullYear();
   const month = String(date.getUTCMonth() + 1).padStart(2, "0");
   const day = String(date.getUTCDate()).padStart(2, "0");
-  return `${year}${month}${day}`;
+  const hh = String(date.getUTCHours()).padStart(2, "0");
+  const mm = String(date.getUTCMinutes()).padStart(2, "0");
+  const ss = String(date.getUTCSeconds()).padStart(2, "0");
+  return `${year}${month}${day}-${hh}${mm}${ss}`;
 }
 
 function trimToLimit(text, limit) {
@@ -173,12 +177,8 @@ function composeCandidate(post, templates, settings, seed, variant) {
   const hashtags = buildHashtags(post, templates, settings);
 
   let sentence = `${opener} ${post.body}`.replace(/\s+/g, " ").trim();
-  if (bridge && closer) {
-    sentence = `${sentence} ${bridge}、${closer}`;
-  }
-  if (cta) {
-    sentence = `${sentence} ${cta}`;
-  }
+  if (bridge && closer) sentence = `${sentence} ${bridge}、${closer}`;
+  if (cta) sentence = `${sentence} ${cta}`;
 
   let text = `${sentence} ${hashtags.join(" ")}`.replace(/\s+/g, " ").trim();
 
@@ -186,7 +186,6 @@ function composeCandidate(post, templates, settings, seed, variant) {
     const shortBody = trimToLimit(post.body, settings.maxBodyLengthBeforeTrim);
     text = `${opener} ${shortBody} ${hashtags.join(" ")}`.replace(/\s+/g, " ").trim();
   }
-
   if (text.length > settings.characterLimit) {
     text = trimToLimit(text, settings.characterLimit);
   }
@@ -229,13 +228,19 @@ function createFallbackDraft(settings, createdAt, serial = 1) {
 }
 
 async function main() {
-  const settings = safeJsonObject(await readFile(resolveFromRoot("data/settings.json"), "utf8"), "settings.json");
-  const output = settings.output || {};
+  const settingsPath = process.env.X_DRAFT_BOT_SETTINGS_PATH
+    ? path.resolve(process.env.X_DRAFT_BOT_SETTINGS_PATH)
+    : resolveFromData("settings.json");
+  const settings = safeJsonObject(await readFile(settingsPath, "utf8"), "settings.json");
 
-  const postsCsvPath = resolveFromRoot(output.postsCsvPath || "data/posts.csv");
-  const templatesPath = resolveFromRoot(output.templatesPath || "data/templates.json");
-  const historyPath = resolveFromRoot(output.historyPath || "data/history.json");
-  const latestDraftsPath = resolveFromRoot(output.latestDraftsPath || "data/latest_drafts.json");
+  const output = settings.output || {};
+  const forceDataDir = Boolean(process.env.X_DRAFT_BOT_DATA_DIR);
+  const postsCsvPath = !forceDataDir && output.postsCsvPath ? resolveFromRoot(output.postsCsvPath) : resolveFromData("posts.csv");
+  const templatesPath = !forceDataDir && output.templatesPath ? resolveFromRoot(output.templatesPath) : resolveFromData("templates.json");
+  const historyPath = !forceDataDir && output.historyPath ? resolveFromRoot(output.historyPath) : resolveFromData("history.json");
+  const latestDraftsPath = !forceDataDir && output.latestDraftsPath ? resolveFromRoot(output.latestDraftsPath) : resolveFromData("latest_drafts.json");
+
+  await mkdir(path.dirname(historyPath), { recursive: true });
 
   const [postsCsv, templatesRaw, historyRaw] = await Promise.all([
     readFile(postsCsvPath, "utf8"),
@@ -311,7 +316,6 @@ async function main() {
   }
 
   const mergedHistory = [...history, ...drafts].slice(-normalizedSettings.historyKeepMax);
-
   const latest = {
     generatedAt: createdAt.toISOString(),
     timezone: normalizedSettings.timezone,

@@ -5,6 +5,13 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, "..");
+const dataDir = process.env.X_DRAFT_BOT_DATA_DIR
+  ? path.resolve(process.env.X_DRAFT_BOT_DATA_DIR)
+  : path.resolve(rootDir, "data");
+
+function resolveFromData(filename) {
+  return path.resolve(dataDir, filename);
+}
 
 function parseArgs(argv) {
   const result = { id: "", index: null, latest: false };
@@ -34,8 +41,8 @@ function printUsage() {
 
 async function main() {
   const args = parseArgs(process.argv.slice(2));
-  const historyPath = path.resolve(rootDir, "data/history.json");
-  const latestPath = path.resolve(rootDir, "data/latest_drafts.json");
+  const historyPath = resolveFromData("history.json");
+  const latestPath = resolveFromData("latest_drafts.json");
 
   const historyRaw = await readFile(historyPath, "utf8").catch(() => "[]");
   const history = JSON.parse(historyRaw);

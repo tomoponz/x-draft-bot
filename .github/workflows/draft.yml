@@ -11,7 +11,7 @@ permissions:
   contents: write
 
 concurrency:
-  group: draft-generation
+  group: draft-generation-main
   cancel-in-progress: false
 
 jobs:
@@ -50,5 +50,7 @@ jobs:
             echo "No changes to commit"
             exit 0
           fi
+
           git commit -m "chore: update drafts and pages"
-          git push
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

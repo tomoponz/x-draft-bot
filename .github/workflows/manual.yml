@@ -7,8 +7,8 @@ permissions:
   contents: write
 
 concurrency:
-  group: manual-draft-build
-  cancel-in-progress: true
+  group: draft-generation-main
+  cancel-in-progress: false
 
 jobs:
   build:
@@ -46,5 +46,7 @@ jobs:
             echo "No changes to commit"
             exit 0
           fi
+
           git commit -m "chore: manual update drafts and pages"
-          git push
+          git pull --rebase origin "${GITHUB_REF_NAME}"
+          git push origin "HEAD:${GITHUB_REF_NAME}"

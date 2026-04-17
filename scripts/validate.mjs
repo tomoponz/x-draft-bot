@@ -5,9 +5,12 @@ import { fileURLToPath } from "node:url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const rootDir = path.resolve(__dirname, "..");
+const dataDir = process.env.X_DRAFT_BOT_DATA_DIR
+  ? path.resolve(process.env.X_DRAFT_BOT_DATA_DIR)
+  : path.resolve(rootDir, "data");
 
-function resolve(relativePath) {
-  return path.resolve(rootDir, relativePath);
+function resolveFromData(filename) {
+  return path.resolve(dataDir, filename);
 }
 
 async function readJsonArray(filePath) {
@@ -20,15 +23,11 @@ async function readJsonArray(filePath) {
 }
 
 async function main() {
-  const settingsRaw = await readFile(resolve("data/settings.json"), "utf8");
+  const settingsRaw = await readFile(resolveFromData("settings.json"), "utf8");
   const settings = JSON.parse(settingsRaw);
 
-  if (!settings.output?.historyPath || !settings.output?.latestDraftsPath) {
-    throw new Error("settings.json の output 設定が不足しています");
-  }
-
-  const history = await readJsonArray(resolve(settings.output.historyPath));
-  const latestRaw = await readFile(resolve(settings.output.latestDraftsPath), "utf8");
+  const history = await readJsonArray(resolveFromData("history.json"));
+  const latestRaw = await readFile(resolveFromData("latest_drafts.json"), "utf8");
   const latest = JSON.parse(latestRaw);
 
   if (!Array.isArray(latest.drafts)) {
@@ -38,6 +37,14 @@ async function main() {
   for (const item of latest.drafts) {
     if (!item.id || !item.text) {
       throw new Error("latest_drafts.json に id または text が空の候補があります");
+    }
+
+    if (typeof item.charCount === "number" && item.charCount !== item.text.length) {
+      throw new Error(`charCount と text.length が一致しません: ${item.id}`);
+    }
+
+    if (item.text.length > Number(settings.characterLimit || 140)) {
+      throw new Error(`文字数上限を超える候補があります: ${item.id}`);
     }
   }
 
